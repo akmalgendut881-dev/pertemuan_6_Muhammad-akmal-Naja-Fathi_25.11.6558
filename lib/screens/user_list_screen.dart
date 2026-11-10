@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
 import '../models/user.dart';
-import '../services/api_service.dart';
+import '../repositories/user_repository.dart';
+import '../repositories/user_repository_impl.dart';
 import '../widgets/user_card.dart';
 
+/// Halaman untuk menampilkan daftar pengguna.
+///
+/// Halaman ini menggunakan [UserRepository] untuk mengambil data,
+/// sehingga UI tidak bergantung langsung pada `ApiService`.
 class UserListScreen extends StatefulWidget {
-  const UserListScreen({super.key});
+  /// Repository sumber data pengguna.
+  ///
+  /// Jika `null`, dipakai [UserRepositoryImpl]. Parameter ini
+  /// memungkinkan repository diganti dengan mock saat pengujian.
+  final UserRepository? repository;
+
+  /// Membuat [UserListScreen] dengan [repository] opsional.
+  const UserListScreen({super.key, this.repository});
 
   @override
   State<UserListScreen> createState() => _UserListScreenState();
 }
 
 class _UserListScreenState extends State<UserListScreen> {
-  final ApiService _apiService = ApiService();
+  late final UserRepository _repository;
   List<User> _users = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -20,9 +32,12 @@ class _UserListScreenState extends State<UserListScreen> {
   @override
   void initState() {
     super.initState();
+    _repository = widget.repository ?? UserRepositoryImpl();
     _loadUsers();
   }
 
+  /// Memuat daftar pengguna dari repository dan memperbarui state
+  /// (loading, data, atau pesan error).
   Future<void> _loadUsers() async {
     setState(() {
       _isLoading = true;
@@ -30,7 +45,7 @@ class _UserListScreenState extends State<UserListScreen> {
     });
 
     try {
-      final users = await _apiService.getUsers();
+      final users = await _repository.getUsers();
       setState(() {
         _users = users;
         _isLoading = false;

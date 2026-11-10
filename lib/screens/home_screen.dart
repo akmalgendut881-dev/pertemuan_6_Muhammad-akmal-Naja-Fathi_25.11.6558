@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import '../services/secure_storage_service.dart';
 import 'user_list_screen.dart';
 
+/// Halaman utama aplikasi.
+///
+/// Berisi tiga bagian: pengelolaan token di secure storage,
+/// tombol menuju daftar pengguna (HTTP request), dan catatan keamanan.
 class HomeScreen extends StatefulWidget {
+  /// Membuat [HomeScreen].
   const HomeScreen({super.key});
 
   @override

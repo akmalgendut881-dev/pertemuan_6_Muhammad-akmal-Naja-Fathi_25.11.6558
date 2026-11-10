@@ -1,5 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+/// Service untuk menyimpan data sensitif secara terenkripsi.
+///
+/// Menggunakan `flutter_secure_storage` (EncryptedSharedPreferences di
+/// Android dan Keychain di iOS) untuk menyimpan token dan PIN.
+/// Nilai sensitif tidak pernah dicetak ke log.
 class SecureStorageService {
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -9,43 +15,49 @@ class SecureStorageService {
   static const String _tokenKey = 'auth_token';
   static const String _pinKey = 'user_pin';
 
-  // Menyimpan token
+  /// Menyimpan [token] ke secure storage.
   Future<void> saveToken(String token) async {
     await _storage.write(key: _tokenKey, value: token);
-    print('Token berhasil disimpan'); // Logging aman (tanpa cetak nilai token)
+    debugPrint('Token berhasil disimpan'); // Logging aman (tanpa cetak nilai token)
   }
 
-  // Membaca token
+  /// Membaca token dari secure storage.
+  ///
+  /// Mengembalikan `null` jika token belum disimpan.
   Future<String?> getToken() async {
     final token = await _storage.read(key: _tokenKey);
-    print(token != null ? 'Token ditemukan' : 'Token tidak ditemukan');
+    debugPrint(token != null ? 'Token ditemukan' : 'Token tidak ditemukan');
     return token;
   }
 
-  // Menghapus token
+  /// Menghapus token dari secure storage.
   Future<void> deleteToken() async {
     await _storage.delete(key: _tokenKey);
-    print('Token berhasil dihapus');
+    debugPrint('Token berhasil dihapus');
   }
 
-  // Menyimpan PIN
+  /// Menyimpan [pin] ke secure storage.
   Future<void> savePin(String pin) async {
     await _storage.write(key: _pinKey, value: pin);
-    print('PIN berhasil disimpan');
+    debugPrint('PIN berhasil disimpan');
   }
 
-  // Membaca PIN
+  /// Membaca PIN dari secure storage.
+  ///
+  /// Mengembalikan `null` jika PIN belum disimpan.
   Future<String?> getPin() async {
     return await _storage.read(key: _pinKey);
   }
 
-  // Menghapus semua data
+  /// Menghapus semua data di secure storage.
   Future<void> deleteAll() async {
     await _storage.deleteAll();
-    print('Semua data berhasil dihapus');
+    debugPrint('Semua data berhasil dihapus');
   }
 
-  // Cek keberadaan token
+  /// Memeriksa apakah token sudah tersimpan.
+  ///
+  /// Mengembalikan `true` jika token ada di secure storage.
   Future<bool> hasToken() async {
     return await _storage.containsKey(key: _tokenKey);
   }
